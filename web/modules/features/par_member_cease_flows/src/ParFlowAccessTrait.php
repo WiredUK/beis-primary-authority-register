@@ -5,6 +5,7 @@ namespace Drupal\par_member_cease_flows;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\par_flows\ParFlowException;
+use Drupal\par_roles\ParAccessResultForbidden;
 use Symfony\Component\Routing\Route;
 use Drupal\Core\Routing\RouteMatchInterface;
 
@@ -33,7 +34,9 @@ trait ParFlowAccessTrait {
 
     // If the partnership isn't a coordinated one then don't allow update.
     if (!$par_data_partnership->isCoordinated()) {
-      $this->accessResult = AccessResult::forbidden('This is not a coordinated partnership.');
+      $reason = 'This is not a coordinated partnership.';
+      $explanation = 'This is not a coordinated partnership.';
+      $this->accessResult = new ParAccessResultForbidden($reason, $explanation);
     }
 
     // If the membership has been ceased we won't let them re-edit.

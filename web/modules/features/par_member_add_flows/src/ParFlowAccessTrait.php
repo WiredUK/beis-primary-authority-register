@@ -5,6 +5,7 @@ namespace Drupal\par_member_add_flows;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\par_flows\ParFlowException;
+use Drupal\par_roles\Access\ParAccessResultForbidden;
 use Symfony\Component\Routing\Route;
 use Drupal\Core\Routing\RouteMatchInterface;
 
@@ -32,7 +33,9 @@ trait ParFlowAccessTrait {
 
     // If the partnership isn't a coordinated one then don't allow update.
     if (!$par_data_partnership->isCoordinated()) {
-      $this->accessResult = AccessResult::forbidden('This is not a coordinated partnership.');
+      $reason = 'This is not a coordinated partnership.';
+      $explanation = 'You cannot add members to this partnerhsip.';
+      $this->accessResult = new ParAccessResultForbidden($reason, $explanation);
     }
 
     $locked = FALSE;

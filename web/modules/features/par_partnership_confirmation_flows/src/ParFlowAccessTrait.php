@@ -7,6 +7,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\par_data\Entity\ParDataPartnership;
 use Drupal\par_flows\ParFlowException;
+use Drupal\par_roles\ParAccessResultForbidden;
 use Symfony\Component\Routing\Route;
 
 trait ParFlowAccessTrait {
@@ -31,9 +32,11 @@ trait ParFlowAccessTrait {
       'confirmed_authority',
     ];
 
-    // If this enforcement notice has not been reviewed.
+    // If this partnership has not been reviewed by the organisation.
     if (!in_array($par_data_partnership->getRawStatus(), $allowed_statuses)) {
-      $this->accessResult = AccessResult::forbidden('This partnership has not been fully reviewed yet.');
+      $reason = 'This partnership has already been reviewed yet.';
+      $explanation = 'This partnership has already been reviewed yet.';
+      $this->accessResult = new ParAccessResultForbidden($reason, $explanation);
     }
 
     return parent::accessCallback($route, $route_match, $account);
