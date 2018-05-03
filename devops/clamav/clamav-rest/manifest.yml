@@ -1,0 +1,4 @@
+applications:
+- name: par-clamav-rest-proxy
+  path: target/clamav-rest-1.0.3.jar
+  buildpack: java_buildpack

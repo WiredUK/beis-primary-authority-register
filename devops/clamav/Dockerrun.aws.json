@@ -1,8 +1,7 @@
 {
     "AWSEBDockerrunVersion": "1",
     "Image": {
-        "Name": "parbeta/clamavd:v1",
-        "Update": "true"
+        "Name": "parbeta/clamavd:v1"
     },
     "Ports": [
         {
