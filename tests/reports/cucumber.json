@@ -1,0 +1,332 @@
+[
+  {
+    "keyword": "Feature",
+    "name": "Enforcement Officer - Enforcement Notice Process",
+    "line": 1,
+    "id": "enforcement-officer---enforcement-notice-process",
+    "tags": [],
+    "uri": "features/1-create-enforcement-notices.feature",
+    "elements": [
+      {
+        "id": "enforcement-officer---enforcement-notice-process;enforcement-officer---issue-enforcement-notice-(direct-and-coordinated)",
+        "keyword": "Scenario",
+        "line": 20,
+        "name": "Enforcement Officer - Issue enforcement notice (direct and coordinated)",
+        "tags": [
+          {
+            "name": "@ci2",
+            "line": 3
+          },
+          {
+            "name": "@enforcementnotices",
+            "line": 3
+          }
+        ],
+        "type": "scenario",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "match": {
+              "location": "support/hooks.js:16"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9013000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 8,
+            "name": "I am logged in as \"par_enforcement_officer@example.com\"",
+            "match": {
+              "location": "step-definitions/generic-steps.js:89"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 3749000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 12,
+            "name": "I create new valid enforcement notification \"Enforcement notice 1\" for organisation \"Charlie's Cafe\"",
+            "match": {
+              "location": "step-definitions/enforcement-notifications.js:5"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 30405000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 16,
+            "name": "the \"enforcement creation\" email confirmations for \"par_authority@example.com\" are processed",
+            "match": {
+              "location": "step-definitions/generic-steps.js:136"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 11584000000
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "match": {
+              "location": "support/hooks.js:21"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 81000000
+            }
+          }
+        ]
+      },
+      {
+        "id": "enforcement-officer---enforcement-notice-process;enforcement-officer---issue-enforcement-notice-(direct-and-coordinated)",
+        "keyword": "Scenario",
+        "line": 21,
+        "name": "Enforcement Officer - Issue enforcement notice (direct and coordinated)",
+        "tags": [
+          {
+            "name": "@ci2",
+            "line": 3
+          },
+          {
+            "name": "@enforcementnotices",
+            "line": 3
+          }
+        ],
+        "type": "scenario",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "match": {
+              "location": "support/hooks.js:16"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 1590000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 8,
+            "name": "I am logged in as \"par_enforcement_officer@example.com\"",
+            "match": {
+              "location": "step-definitions/generic-steps.js:89"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 3191000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 12,
+            "name": "I create new valid enforcement notification \"Enforcement notice 2\" for organisation \"Charlie's Cafe\"",
+            "match": {
+              "location": "step-definitions/enforcement-notifications.js:5"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 28998000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 16,
+            "name": "the \"enforcement creation\" email confirmations for \"par_authority@example.com\" are processed",
+            "match": {
+              "location": "step-definitions/generic-steps.js:136"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9883000000
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "match": {
+              "location": "support/hooks.js:21"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 74000000
+            }
+          }
+        ]
+      },
+      {
+        "id": "enforcement-officer---enforcement-notice-process;enforcement-officer---issue-enforcement-notice-(direct-and-coordinated)",
+        "keyword": "Scenario",
+        "line": 22,
+        "name": "Enforcement Officer - Issue enforcement notice (direct and coordinated)",
+        "tags": [
+          {
+            "name": "@ci2",
+            "line": 3
+          },
+          {
+            "name": "@enforcementnotices",
+            "line": 3
+          }
+        ],
+        "type": "scenario",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "match": {
+              "location": "support/hooks.js:16"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 1577000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 8,
+            "name": "I am logged in as \"par_enforcement_officer@example.com\"",
+            "match": {
+              "location": "step-definitions/generic-steps.js:89"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 3071000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 12,
+            "name": "I create new valid enforcement notification \"Enforcement notice 3\" for organisation \"Charlie's Cafe\"",
+            "match": {
+              "location": "step-definitions/enforcement-notifications.js:5"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 29276000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 16,
+            "name": "the \"enforcement creation\" email confirmations for \"par_authority@example.com\" are processed",
+            "match": {
+              "location": "step-definitions/generic-steps.js:136"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9619000000
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "match": {
+              "location": "support/hooks.js:21"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 77000000
+            }
+          }
+        ]
+      },
+      {
+        "id": "enforcement-officer---enforcement-notice-process;enforcement-officer---issue-enforcement-notice-(direct-and-coordinated)",
+        "keyword": "Scenario",
+        "line": 23,
+        "name": "Enforcement Officer - Issue enforcement notice (direct and coordinated)",
+        "tags": [
+          {
+            "name": "@ci2",
+            "line": 3
+          },
+          {
+            "name": "@enforcementnotices",
+            "line": 3
+          }
+        ],
+        "type": "scenario",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "match": {
+              "location": "support/hooks.js:16"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 1790000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 8,
+            "name": "I am logged in as \"par_enforcement_officer@example.com\"",
+            "match": {
+              "location": "step-definitions/generic-steps.js:89"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 3007000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 12,
+            "name": "I create new valid enforcement notification \"Enforcement notice 4\" for organisation \"Charlie's Cafe\"",
+            "match": {
+              "location": "step-definitions/enforcement-notifications.js:5"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 27290000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 16,
+            "name": "the \"enforcement creation\" email confirmations for \"par_authority@example.com\" are processed",
+            "match": {
+              "location": "step-definitions/generic-steps.js:136"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8548000000
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "match": {
+              "location": "support/hooks.js:21"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 76000000
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
