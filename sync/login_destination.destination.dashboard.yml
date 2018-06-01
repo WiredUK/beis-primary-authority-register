@@ -12,8 +12,9 @@ destination_path: 'internal:/dashboard'
 pages_type: 0
 pages: ''
 roles:
+  authenticated: authenticated
   par_authority: par_authority
   par_enforcement: par_enforcement
   par_organisation: par_organisation
-weight: 0
+weight: -9
 enabled: true

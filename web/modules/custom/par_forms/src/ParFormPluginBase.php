@@ -3,10 +3,15 @@
 namespace Drupal\par_forms;
 
 use Drupal\Component\Plugin\PluginBase;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Logger\LoggerChannelTrait;
+use Drupal\Core\Routing\UrlGeneratorInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\par_data\ParDataManagerInterface;
+use Drupal\par_flows\ParDisplayTrait;
 use Drupal\par_flows\ParFlowDataHandlerInterface;
 use Drupal\par_flows\ParFlowNegotiatorInterface;
+use Drupal\par_flows\ParRedirectTrait;
 
 /**
  * Provides a base implementation for a ParForm plugin.
@@ -19,6 +24,9 @@ use Drupal\par_flows\ParFlowNegotiatorInterface;
 abstract class ParFormPluginBase extends PluginBase implements ParFormPluginBaseInterface {
 
   use StringTranslationTrait;
+  use ParRedirectTrait;
+  use ParDisplayTrait;
+  use LoggerChannelTrait;
 
   /**
    * A mapping definition of form elements to entity properties.
@@ -113,6 +121,34 @@ abstract class ParFormPluginBase extends PluginBase implements ParFormPluginBase
   }
 
   /**
+   * Dynamically get url generator service.
+   *
+   * @return UrlGeneratorInterface
+   */
+  public function getUrlGenerator() {
+    return \Drupal::service('url_generator');
+  }
+
+  /**
+   * Dynamically get the entity field manager service.
+   *
+   * @return EntityFieldManagerInterface
+   */
+  public function getEntityFieldManager() {
+    return \Drupal::service('entity_field.manager');
+  }
+
+  /**
+   * Returns the logger channel specific to errors logged by PAR Forms.
+   *
+   * @return string
+   *   Get the logger channel to use.
+   */
+  public function getLoggerChannel() {
+    return 'par';
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function calculateDependencies() {
@@ -139,7 +175,7 @@ abstract class ParFormPluginBase extends PluginBase implements ParFormPluginBase
    * @param mixed $data
    *   If required the data to be counted can be switched to the form_state values.
    *
-   * @return integer|NULL
+   * @return integer
    */
   public function countItems($data = NULL) {
     if ($this->getCardinality() !== 1) {
@@ -148,12 +184,63 @@ abstract class ParFormPluginBase extends PluginBase implements ParFormPluginBase
         count($this->getFlowDataHandler()->getTempDataValue(ParFormBuilder::PAR_COMPONENT_PREFIX . $this->getPluginId()));
     }
 
-    return NULL;
+    return 0;
   }
 
+  /**
+   * Get the next available cardinality for adding a new item.
+   *
+   * @param mixed $data
+   *   If required the data to be counted can be switched to the form_state values.
+   *
+   * @return integer
+   */
+  public function getNewCardinality($data = NULL) {
+    $count = $this->countItems($data);
+
+    // If there is no add another button don't display an empty item.
+    $actions = $this->getComponentActions([], $count);
+    if ($actions && isset($actions['add_another'])) {
+      $count++;
+    }
+
+    return $count ?: 1;
+  }
+
+  /**
+   * Get the defaults by a replacement form data key.
+   *
+   * @param $key
+   *   The form data key.
+   * @param $cardinality
+   *   The cardinality to get the value for.
+   * @param string $default
+   *   The default value if none found.
+   * @param null $cid
+   *   The cache id.
+   *
+   * @return mixed|null
+   */
   public function getDefaultValuesByKey($key, $cardinality, $default = '', $cid = NULL) {
     $element_key = $this->getElementKey($key, $cardinality);
-    return $this->getFlowDataHandler()->getDefaultValues($this->getElementKey($key, $cardinality), $default, $cid);
+    return $this->getFlowDataHandler()->getDefaultValues($element_key, $default, $cid);
+  }
+
+  /**
+   * Get the defaults by a replacement form data key.
+   *
+   * @param $key
+   *   The form data key.
+   * @param $cardinality
+   *   The cardinality to get the value for.
+   * @param string $value
+   *   The value to be set.
+   *
+   * @return mixed|null
+   */
+  public function setDefaultValuesByKey($key, $cardinality, $value = '') {
+    $element_key = $this->getElementKey($key, $cardinality);
+    return $this->getFlowDataHandler()->setFormPermValue($element_key, $value);
   }
 
   /**
@@ -194,7 +281,7 @@ abstract class ParFormPluginBase extends PluginBase implements ParFormPluginBase
    * @param int $cardinality
    *   The cardinality of this element.
    *
-   * @return string|array
+   * @return string
    *   The key for this form element.
    */
   public function getElementName($element, $cardinality = 1) {
@@ -209,7 +296,12 @@ abstract class ParFormPluginBase extends PluginBase implements ParFormPluginBase
       }
     }
     else {
-      return $element;
+      if (is_array($element)) {
+        return implode('][', $element) . ']';
+      }
+      else {
+        return $element;
+      }
     }
   }
 
@@ -262,9 +354,7 @@ abstract class ParFormPluginBase extends PluginBase implements ParFormPluginBase
   /**
    * {@inheritdoc}
    */
-  public function validate(&$form_state, $cardinality = 1) {
-    $violations = [];
-
+  public function validate(&$form_state, $cardinality = 1, array $violations = []) {
     // Assign all the form values to the relevant entity field values.
     foreach ($this->getMapping() as $entity_name => $form_items) {
       list($type, $bundle) = explode(':', $entity_name . ':');
@@ -299,7 +389,7 @@ abstract class ParFormPluginBase extends PluginBase implements ParFormPluginBase
           $violations[$field_name] = $entity->validate()->filterByFieldAccess()->getByFields([$field_name]);
         }
         catch(\Exception $e) {
-          $this->getLogger($this->getLoggerChannel())->critical('An error occurred validating form %entity_id: @detail.', ['%entity_id' => $entity->getEntityTypeId(), '@details' => $e->getMessage()]);
+          $this->getLogger($this->getLoggerChannel())->critical('An error occurred validating form %entity_id: @details.', ['%entity_id' => $entity->getEntityTypeId(), '@details' => $e->getMessage()]);
         }
       }
     }
@@ -313,5 +403,59 @@ abstract class ParFormPluginBase extends PluginBase implements ParFormPluginBase
   public function save($cardinality = 1) {
     // @TODO Add automatic saving of data based on the mapping (self::getMapping)
     // between self::getElements() and self::getFlowDataHandler()->getParameters()
+  }
+
+  /**
+   * Get the fieldset wrapper for this component.
+   */
+  public function getWrapper() {
+    return [
+      '#weight' => $this->getWeight(),
+      '#tree' => $this->getCardinality() === 1 ? FALSE : TRUE,
+    ];
+  }
+
+  /**
+   * Get the fieldset wrapper for this component.
+   */
+  public function getElementActions($cardinality = 1, $actions = []) {
+    $count = $this->getNewCardinality();
+
+    if ($this->getCardinality() !== 1 && $cardinality !== $count) {
+      $actions['remove'] = [
+          '#type' => 'submit',
+          '#name' => "remove:{$this->getPluginId()}:{$cardinality}",
+          '#weight' => 100,
+          '#submit' => ['::removeItem'],
+          '#value' => $this->t("Remove"),
+          '#attributes' => [
+            'class' => ['btn-link'],
+          ],
+      ];
+    }
+
+    return $actions;
+  }
+
+  /**
+   * Get the fieldset wrapper for this component.
+   */
+  public function getComponentActions($actions = [], $count = NULL) {
+    $count = isset($count) ? $count : $this->getNewCardinality();
+
+    if ($this->getCardinality() === -1
+      || ($this->getCardinality() > 1 && $this->getCardinality() > $count)) {
+      $actions['add_another'] = [
+        '#type' => 'submit',
+        '#name' => 'add_another',
+        '#submit' => ['::multipleItemActionsSubmit'],
+        '#value' => $this->t('Add another'),
+        '#attributes' => [
+          'class' => ['btn-link'],
+        ],
+      ];
+    }
+
+    return $actions;
   }
 }

@@ -151,9 +151,9 @@ class ParDashboardsDashboardController extends ControllerBase {
         '#collapsed' => FALSE,
       ];
 
-      if ($this->getCurrentUser()->hasPermission('send enforcement notice')) {
-        $link = $this->getLinkByRoute('view.par_user_enforcement_list.enforcement_notices_sent')
-          ->setText('See enforcement notifications sent')
+      if ($this->getCurrentUser()->hasPermission('send enforcement notice') || $this->getCurrentUser()->hasPermission('approve enforcement notice')) {
+        $link = $this->getLinkByRoute('view.par_user_enforcements.enforcement_notices_page')
+          ->setText('See enforcement notices')
           ->toString();
 
         $build['messages'][] = [
@@ -162,16 +162,32 @@ class ParDashboardsDashboardController extends ControllerBase {
         ];
       }
 
-      if ($this->getCurrentUser()->hasPermission('approve enforcement notice')) {
-        $link = $this->getLinkByRoute('view.par_user_enforcement_list.enforcement_notices_received')
-          ->setText('See enforcement notifications received')
-          ->toString();
+      // @TODO Add when enquiry journeys are completed.
+//      if ($this->getCurrentUser()->hasPermission('view authority enquiries')) {
+//        $enquiry_link = $this->getLinkByRoute('xxx')
+//          ->setText('See enquiries')
+//          ->toString();
+//
+//        $build['messages'][] = [
+//          '#type' => 'markup',
+//          '#markup' => "<p>{$enquiry_link}</p>",
+//        ];
+//      }
+    }
 
-        $build['messages'][] = [
+    // If there is nothing to display on the dashboard let the user know.
+    if (empty($build)) {
+      $build['welcome'] = [
+        '#type' => 'fieldset',
+        '#title' => $this->t('Welcome'),
+        '#attributes' => ['class' => 'form-group'],
+        '#collapsible' => FALSE,
+        '#collapsed' => FALSE,
+        [
           '#type' => 'markup',
-          '#markup' => "<p>{$link}</p>",
-        ];
-      }
+          '#markup' => "<p>Hello! Welcome to the Primary Authority Register, there is nothing for you to see yet. To get started please contact the helpdesk who will be able to give you access to the correct partnerships.</p>",
+        ],
+      ];
     }
 
     return $build;

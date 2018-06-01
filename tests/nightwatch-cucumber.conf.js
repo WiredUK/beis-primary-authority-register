@@ -5,9 +5,7 @@ const electron = require('electron-prebuilt');
 require('nightwatch-cucumber')({
     cucumberArgs: [
             '--require', 'step-definitions', 
-            '-- --tag', '@ci', 
             '--require', 'support', 
-            '--require', 'page_objects', 
             '--format', 'node_modules/cucumber-pretty', 
             '--format', 'json:reports/cucumber.json', 
             'features'
@@ -16,8 +14,8 @@ require('nightwatch-cucumber')({
 
 module.exports = {
     output_folder: 'reports',
-    custom_assertions_path: 'assertions',
-    page_objects_path: 'page_objects',
+    custom_assertions_path: 'step-definitions/assertions',
+    page_objects_path: 'step-definitions/page_objects',
     live_output: false,
     disable_colors: false,
     selenium: {
@@ -58,6 +56,6 @@ module.exports = {
                 javascriptEnabled: true,
                 acceptSslCerts: true
             }
-        }
+        },
     }
 }

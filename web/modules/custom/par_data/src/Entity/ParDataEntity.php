@@ -2,6 +2,8 @@
 
 namespace Drupal\par_data\Entity;
 
+use Drupal\Core\Entity\EntityEvent;
+use Drupal\Core\Entity\EntityEvents;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityPublishedTrait;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -9,6 +11,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\par_data\Event\ParDataEvent;
 use Drupal\par_data\ParDataManagerInterface;
 use Drupal\trance\Trance;
 
@@ -50,7 +53,12 @@ class ParDataEntity extends Trance implements ParDataEntityInterface {
    * {@inheritdoc}
    */
   public function label() {
-    $label_fields = $this->getTypeEntity()->getConfigurationElementByType('entity', 'label_fields');
+
+    //PAR-988 prevent the page crashing when NULL is returned by getTypeEntity() on the current entity.
+    if (is_object($this->getTypeEntity())) {
+      $label_fields = $this->getTypeEntity()->getConfigurationElementByType('entity', 'label_fields');
+    }
+
     $labels = [];
     if (isset($label_fields) && is_string($label_fields)) {
       $labels[] = $this->getLabelValue($label_fields);
@@ -198,7 +206,7 @@ class ParDataEntity extends Trance implements ParDataEntityInterface {
    * Delete if this entity is deletable and is not new.
    */
   public function delete() {
-    if (!$this->isNew() && !$this->inProgress() && $this->getTypeEntity()->isDeletable() && !$this->isDeleted()) {
+    if ($this->getTypeEntity()->isDeletable() && !$this->isDeleted()) {
       // Set the status to unpublished to make filtering from display easier.
       $this->set('status', 0);
 
@@ -229,7 +237,7 @@ class ParDataEntity extends Trance implements ParDataEntityInterface {
       // Always revision status changes.
       $this->setNewRevision(TRUE);
 
-      return $save ? ($this->save() === SAVED_UPDATED) : TRUE;
+      return $save ? ($this->save() === SAVED_UPDATED || $this->save() === SAVED_NEW) : TRUE;
     }
     return FALSE;
   }
@@ -252,7 +260,7 @@ class ParDataEntity extends Trance implements ParDataEntityInterface {
     if ($this->getTypeEntity()->isRevokable() && $this->isRevoked()) {
       $this->set(ParDataEntity::REVOKE_FIELD, FALSE);
 
-      return $save ? ($this->save() === SAVED_UPDATED) : TRUE;
+      return $save ? ($this->save() === SAVED_UPDATED || $this->save() === SAVED_NEW) : TRUE;
     }
     return FALSE;
   }
@@ -277,7 +285,7 @@ class ParDataEntity extends Trance implements ParDataEntityInterface {
       // Always revision status changes.
       $this->setNewRevision(TRUE);
 
-      return $save ? ($this->save() === SAVED_UPDATED) : TRUE;
+      return $save ? ($this->save() === SAVED_UPDATED || $this->save() === SAVED_NEW) : TRUE;
     }
     return FALSE;
   }
@@ -299,7 +307,7 @@ class ParDataEntity extends Trance implements ParDataEntityInterface {
     if ($this->getTypeEntity()->isRevokable() && $this->isArchived()) {
       $this->set(ParDataEntity::ARCHIVE_FIELD, FALSE);
 
-      return $save ? ($this->save() === SAVED_UPDATED) : TRUE;
+      return $save ? ($this->save() === SAVED_UPDATED || $this->save() === SAVED_NEW) : TRUE;
     }
     return FALSE;
   }
@@ -376,6 +384,11 @@ class ParDataEntity extends Trance implements ParDataEntityInterface {
 
       // Always revision status changes.
       $this->setNewRevision(TRUE);
+
+      // Dispatch a par event.
+      $event = new ParDataEvent($this);
+      $dispatcher = \Drupal::service('event_dispatcher');
+      $dispatcher->dispatch(ParDataEvent::statusChange($this->getEntityTypeId(), $value), $event);
     }
   }
 

@@ -1,7 +1,6 @@
-@ci
 Feature: New Direct Partnership For PA To Approve
 
-Background: 
+    Background: 
         Given I am logged in as "par_authority@example.com"
     
     @directpartneship
@@ -17,13 +16,13 @@ Background:
 
         # REVIEW THE APPLICATION
 
-        And I complete review of the valid direct partnership application
+        And I complete review and submit valid direct partnership application
 
         # INVITATIONS
 
         Then the direct partnership creation email template is correct
 
-    @coordinatedpartneship
+    @coordinatedpartnership
     Scenario: New coordinated Partnership
 
         # PARTNERSHIP APPLY
@@ -36,9 +35,27 @@ Background:
         
         # REVIEW THE APPLICATION
         
-        And I complete review of the valid coordinated partnership application
+        And I complete review and submit valid direct partnership application
         
         # INVITATION
         
         Then the coordinated partnership creation email template is correct
     
+        @coordinatedpartnership
+    Scenario: New coordinated Partnership
+
+        # PARTNERSHIP APPLY
+
+        When I complete valid coordinated partnership application details
+
+        # ADD ORGANISATION DETAIL
+
+        When I complete valid organisation details for coordinated partnership "Organisation For No Members Coordinated Partnership"
+        
+        # REVIEW THE APPLICATION
+        
+        And I complete review and submit valid coordinated partnership application
+        
+        # INVITATION
+        
+        Then the coordinated partnership creation email template is correct
