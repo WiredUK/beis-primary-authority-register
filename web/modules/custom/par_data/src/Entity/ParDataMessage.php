@@ -37,10 +37,10 @@ use Drupal\user\UserInterface;
  *     },
  *     "access" = "Drupal\par_data\Access\ParDataAccessControlHandler",
  *   },
- *   base_table = "par_partnerships",
- *   data_table = "par_partnerships_field_data",
- *   revision_table = "par_partnerships_revision",
- *   revision_data_table = "par_partnerships_field_revision",
+ *   base_table = "par_messages",
+ *   data_table = "par_messages_field_data",
+ *   revision_table = "par_messages_revision",
+ *   revision_data_table = "par_messages_field_revision",
  *   admin_permission = "administer par_data_message entities",
  *   translatable = TRUE,
  *   entity_keys = {
@@ -72,14 +72,14 @@ class ParDataMessage extends ParDataEntity {
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
-    // Partnership Type.
-    $fields['partnership_type'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Partnership Type'))
-      ->setDescription(t('The type of partnership.'))
+    // Message title.
+    $fields['message_title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Title'))
+      ->setDescription(t('Title of the message.'))
       ->setRequired(TRUE)
       ->setRevisionable(TRUE)
       ->setSettings([
-        'max_length' => 255,
+        'max_length' => 1000,
         'text_processing' => 0,
       ])
       ->setDefaultValue('')
@@ -94,20 +94,43 @@ class ParDataMessage extends ParDataEntity {
       ])
       ->setDisplayConfigurable('view', TRUE);
 
-    // Partnership Status.
-    $fields['partnership_status'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Partnership Status'))
-      ->setDescription(t('The current status of the partnership plan itself. For example, current, expired, replaced.'))
+    // Message details.
+    $fields['message_details'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Summary'))
+      ->setDescription(t('Details about this message.'))
       ->addConstraint('par_required')
       ->setRevisionable(TRUE)
       ->setSettings([
-        'max_length' => 255,
         'text_processing' => 0,
       ])
-      ->setDefaultValue('')
       ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
+        'type' => 'text_textarea',
         'weight' => 2,
+        'settings' => [
+          'rows' => 25,
+        ],
+      ])
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'hidden',
+        'type' => 'text_default',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Message status.
+    $fields['message_status'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Message Status'))
+      ->setDescription(t('The status of the message.'))
+      ->setRevisionable(TRUE)
+      ->setSettings([
+        'max_length' => 255,
+        'text_processing' => 0,
+      ])
+      ->setDefaultValue('')
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 3,
       ])
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayOptions('view', [
@@ -116,10 +139,10 @@ class ParDataMessage extends ParDataEntity {
       ])
       ->setDisplayConfigurable('view', TRUE);
 
-    // About Partnership.
-    $fields['about_partnership'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(t('About the Partnership'))
-      ->setDescription(t('Details about this partnership.'))
+    // Message notes.
+    $fields['message_notes'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Message Notes'))
+      ->setDescription(t('Notes about this message.'))
       ->addConstraint('par_required')
       ->setRevisionable(TRUE)
       ->setSettings([
@@ -127,69 +150,31 @@ class ParDataMessage extends ParDataEntity {
       ])
       ->setDisplayOptions('form', [
         'type' => 'text_textarea',
-        'weight' => 25,
+        'weight' => 4,
         'settings' => [
-          'rows' => 3,
+          'rows' => 25,
         ],
       ])
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayOptions('view', [
         'label' => 'hidden',
+        'type' => 'text_default',
         'weight' => 0,
       ])
       ->setDisplayConfigurable('view', TRUE);
 
-    // Approved Date.
-    $fields['approved_date'] = BaseFieldDefinition::create('datetime')
-      ->setLabel(t('Approved Date'))
-      ->setDescription(t('The date this partnership was approved.'))
+    // Message Referral notes.
+    $fields['message_referral_notes'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Referral Notes'))
+      ->setDescription(t('Referral notes.'))
+      ->addConstraint('par_required')
       ->setRevisionable(TRUE)
       ->setSettings([
-        'datetime_type' => 'date',
+        'text_processing' => 0,
       ])
       ->setDisplayOptions('form', [
-        'type' => 'datetime_default',
+        'type' => 'text_textarea',
         'weight' => 7,
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Partnership Status.
-    $fields['cost_recovery'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Cost Recovery'))
-      ->setDescription(t('How is the cost recovered by for this partnership.'))
-      ->setRevisionable(TRUE)
-      ->setSettings([
-        'max_length' => 255,
-        'text_processing' => 0,
-      ])
-      ->setDefaultValue('')
-      ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
-        'weight' => 9,
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Rejected Comment.
-    $fields['reject_comment'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(t('Reject Comment'))
-      ->setDescription(t('Comments about why this partnership was rejected.'))
-      ->setRevisionable(TRUE)
-      ->setSettings([
-        'text_processing' => 0,
-      ])
-      ->setDisplayOptions('form', [
-        'type' => 'text_textarea',
-        'weight' => 10,
         'settings' => [
           'rows' => 25,
         ],
@@ -197,201 +182,29 @@ class ParDataMessage extends ParDataEntity {
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayOptions('view', [
         'label' => 'hidden',
+        'type' => 'text_default',
         'weight' => 0,
       ])
       ->setDisplayConfigurable('view', TRUE);
 
-    // Recovation Source.
-    $fields['revocation_source'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Revocation Source'))
-      ->setDescription(t('Who was responsible for revoking this partnership.'))
+    // Message Documents.
+    $fields['document'] = BaseFieldDefinition::create('file')
+      ->setLabel(t('Document'))
+      ->setDescription(t('Documents relating to the message.'))
+      ->addConstraint('par_required')
       ->setRevisionable(TRUE)
+      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
       ->setSettings([
-        'max_length' => 255,
-        'text_processing' => 0,
-      ])
-      ->setDefaultValue('')
-      ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
-        'weight' => 11,
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Recovation Date.
-    $fields['revocation_date'] = BaseFieldDefinition::create('datetime')
-      ->setLabel(t('Recovation Date'))
-      ->setDescription(t('The date this partnership was revoked.'))
-      ->setRevisionable(TRUE)
-      ->setSettings([
-        'datetime_type' => 'date',
+        'target_type' => 'file',
+        'uri_scheme' => 's3private',
+        'max_filesize' => '20 MB',
+        'file_extensions' => 'jpg jpeg gif png tif pdf txt rdf doc docx odt xls xlsx csv ods ppt pptx odp pot potx pps',
+        'file_directory' => 'documents/message',
       ])
       ->setDisplayOptions('form', [
-        'type' => 'datetime_default',
-        'weight' => 12,
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Revocation Reason.
-    $fields['revocation_reason'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(t('Revocation Reason'))
-      ->setDescription(t('Comments about why this partnership was revoked.'))
-      ->setRevisionable(TRUE)
-      ->setSettings([
-        'text_processing' => 0,
-      ])->setDisplayOptions('form', [
-        'type' => 'text_textarea',
-        'weight' => 13,
-        'settings' => [
-          'rows' => 25,
-        ],
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Authority Change Comment.
-    $fields['authority_change_comment'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(t('Authority Change Comment'))
-      ->setDescription(t('Comments by the authority when this partnership was changed.'))
-      ->setRevisionable(TRUE)
-      ->setSettings([
-        'text_processing' => 0,
-      ])->setDisplayOptions('form', [
-        'type' => 'text_textarea',
-        'weight' => 14,
-        'settings' => [
-          'rows' => 25,
-        ],
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Organisation Change Comment.
-    $fields['organisation_change_comment'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(t('Organisation Change Comment'))
-      ->setDescription(t('Comments by the organisation when this partnership was changed.'))
-      ->setRevisionable(TRUE)
-      ->setSettings([
-        'text_processing' => 0,
-      ])->setDisplayOptions('form', [
-        'type' => 'text_textarea',
-        'weight' => 15,
-        'settings' => [
-          'rows' => 25,
-        ],
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Terms and conditions agreed by organisation.
-    $fields['terms_organisation_agreed'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Organisation Terms and Conditions'))
-      ->setDescription(t('Terms and conditions agreed by organisation.'))
-      ->setRevisionable(TRUE)
-      ->setDisplayOptions('form', [
-        'type' => 'boolean_checkbox',
-        'weight' => 22,
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Terms and conditions agreed by authority.
-    $fields['terms_authority_agreed'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Authority Terms and Conditions'))
-      ->setDescription(t('Terms and conditions agreed by authority.'))
-      ->setRevisionable(TRUE)
-      ->setDisplayOptions('form', [
-        'type' => 'boolean_checkbox',
-        'weight' => 23,
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Coordinator suitable.
-    $fields['coordinator_suitable'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Coordinator Suitable'))
-      ->setDescription(t('Is coordinator suitable.'))
-      ->setRevisionable(TRUE)
-      ->setDisplayOptions('form', [
-        'type' => 'boolean_checkbox',
-        'weight' => 24,
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Partnership info confirmed by authority.
-    $fields['partnership_info_agreed_authority'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Authority Information Agreed'))
-      ->setDescription(t('The partnership information has been agreed by the authority.'))
-      ->setRevisionable(TRUE)
-      ->setDisplayOptions('form', [
-        'type' => 'boolean_checkbox',
-        'weight' => 25,
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Partnership info confirmed by business.
-    $fields['partnership_info_agreed_business'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Business Information Agreed'))
-      ->setDescription(t('The partnership information has been agreed by the business.'))
-      ->setRevisionable(TRUE)
-      ->setDisplayOptions('form', [
-        'type' => 'boolean_checkbox',
-        'weight' => 26,
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Written summary agreed.
-    $fields['written_summary_agreed'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Written Summary Agreed'))
-      ->setDescription(t('A written summary has been agreed between the authority and the organisation.'))
-      ->setRevisionable(TRUE)
-      ->setDisplayOptions('form', [
-        'type' => 'boolean_checkbox',
-        'weight' => 27,
+        'weight' => 6,
+        'default_widget' => "file_generic",
+        'default_formatter' => "file_default",
       ])
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayOptions('view', [
@@ -402,5 +215,4 @@ class ParDataMessage extends ParDataEntity {
 
     return $fields;
   }
-
 }
