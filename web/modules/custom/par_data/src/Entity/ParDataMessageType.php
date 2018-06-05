@@ -7,7 +7,7 @@ namespace Drupal\par_data\Entity;
  *
  * @ConfigEntityType(
  *   id = "par_data_message_type",
- *   label = @Translation("PAR Partnership Type"),
+ *   label = @Translation("PAR Message Type"),
  *   handlers = {
  *     "list_builder" = "Drupal\trance\TranceTypeListBuilder",
  *     "form" = {
@@ -18,7 +18,7 @@ namespace Drupal\par_data\Entity;
  *   },
  *   config_prefix = "par_data_message_type",
  *   admin_permission = "administer site configuration",
- *   bundle_of = "par_data_partnership",
+ *   bundle_of = "par_data_message",
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",
