@@ -375,7 +375,7 @@ function par_data_update_8025() {
 }
 
 /**
- *  Enforce new message entity updates.
+ * Enforce new message entity updates.
  */
 function par_data_update_8026() {
   \Drupal::service('entity.definition_update_manager')->applyUpdates();
