@@ -1,6 +1,3 @@
-const seleniumServer = require('selenium-server')
-const chromedriver = require('chromedriver')
-
 require('nightwatch-cucumber')({
     cucumberArgs: [
         '--require', 'step-definitions', 
@@ -22,8 +19,7 @@ module.exports = {
         workers: 3
     },
     selenium: {
-        start_process: true,
-        server_path: seleniumServer.path,
+        start_process: false,
         log_path: '',
         host: '127.0.0.1',
         port: 4444
@@ -47,11 +43,6 @@ module.exports = {
                 javascriptEnabled: true,
                 acceptSslCerts: true
             },
-            selenium: {
-                cli_args: {
-                    'webdriver.chrome.driver': chromedriver.path
-                }
-            }
         }
     }
 }

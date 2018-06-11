@@ -1,7 +1,3 @@
-const seleniumServer = require('selenium-server')
-const chromedriver = require('chromedriver')
-const electron = require('electron-prebuilt');
-
 require('nightwatch-cucumber')({
     cucumberArgs: [
             '--require', 'step-definitions', 
@@ -44,11 +40,6 @@ module.exports = {
                   },
                 javascriptEnabled: true,
                 acceptSslCerts: true
-            },
-            selenium: {
-                cli_args: {
-                    'webdriver.chrome.driver': chromedriver.path
-                }
             }
         },
         firefox: {

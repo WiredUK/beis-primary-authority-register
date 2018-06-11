@@ -1,6 +1,3 @@
-const seleniumServer = require('selenium-server')
-const chromedriver = require('chromedriver')
-
 require('nightwatch-cucumber')({
     cucumberArgs: [
             '--require', 'step-definitions', 
@@ -49,11 +46,6 @@ module.exports = {
                 enabled : true,
                 on_failure : true,
                 path: './reports/screenshots'
-            },
-            selenium: {
-                cli_args: {
-                    'webdriver.chrome.driver': chromedriver.path
-                }
             }
         },
     }
