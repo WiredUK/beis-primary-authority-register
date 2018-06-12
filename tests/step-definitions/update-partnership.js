@@ -82,7 +82,7 @@ When('I add and subsequently edit a trading name', function () {
 
   When('I edit the main authority contact', function () {
     return shared
-      .clickLinkByPureText('edit authority contact')
+      .clickLinkByPureText('edit Big Bird')
       .clearValue('#edit-salutation')
       .clearValue('#edit-first-name')
       .clearValue('#edit-last-name')
@@ -109,13 +109,13 @@ When('I upload a file to the partnership advice section', function () {
     .assert.containsText('h3.heading-medium', 'How to upload Primary Authority Advice to Local Authorities')
     .setValue('input[name=\"files[files][]\"]', __dirname + '/files/test.png') 
     .click('#edit-upload')
-    .waitForElementVisible('#par-partnership-advice-add', 2000)
-    .click('#edit-regulatory-functions--wrapper > div > div > label')
-    .click('#edit-advice-type-business-advice')
+    .waitForElementVisible('#par-partnership-advice-add', 5000)
+    .click('#edit-advice-type-background-information')
+    .click('.form-checkbox')
     .click('#edit-save')
     .assert.containsText('.table-scroll-wrapper', 'Download test.png')
-    // shared.assert.containsText('.table-scroll-wrapper', 'Primary Authority advice for the organisation covering: ' + result.value)
     .click('.button')
+    // shared.assert.containsText('.table-scroll-wrapper', 'Primary Authority advice for the organisation covering: ' + result.value)
 });
 
 When('I add and subsequently edit a organisation contact', function () {
