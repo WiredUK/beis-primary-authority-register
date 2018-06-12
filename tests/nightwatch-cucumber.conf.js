@@ -16,8 +16,7 @@ module.exports = {
     live_output: false,
     disable_colors: false,
     selenium: {
-        start_process: true,
-        server_path: seleniumServer.path,
+        start_process: false,
         log_path: '',
         host: '127.0.0.1',
         port: 4444
